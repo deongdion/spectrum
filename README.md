@@ -50,20 +50,6 @@ Run the example bot, then text the bot's number `help` to list everything it can
 python example.py
 ```
 
-## AI assistant
-
-`ai.py` turns the bot into an assistant backed by an LLM API: the Anthropic Messages API (for example Z.ai GLM) or any OpenAI-compatible endpoint (for example a local Ollama server). The model can search the web and read pages on its own, and each conversation keeps a short history (text `reset` to clear it).
-
-```bash
-# .env
-AI_API=anthropic-messages          # or openai-completions
-AI_BASE_URL=https://api.z.ai/api/anthropic
-AI_MODEL=glm-5.3-flash
-AI_API_KEY=...
-
-python ai.py
-```
-
 ## How it works
 
 ```mermaid
