@@ -209,16 +209,25 @@ class Client:
         self._dispatcher.remove_listener(func, name)
 
     async def wait_for(
-        self, event: str, *, check: Callable[..., bool] | None = None, timeout: float | None = None
+        self,
+        event: str,
+        *,
+        check: Callable[..., bool] | None = None,
+        timeout: float | None = None,
+        consume: bool = False,
     ) -> Any:
         """Await the next ``event`` whose arguments satisfy ``check``.
 
-        ``reply = await client.wait_for("message", check=lambda m: m.space == space, timeout=60)``
-        """
-        return await self._dispatcher.wait_for(event, check=check, timeout=timeout)
+        With ``consume=True`` the matched event is handed only to this waiter: ``on_message``
+        and other listeners do not see it (use it for "ask a question, take the answer" flows).
 
-    def dispatch(self, event: str, *args: Any) -> None:
-        self._dispatcher.dispatch(event, *args)
+        ``answer = await client.wait_for("message", check=lambda m: m.space == space, consume=True)``
+        """
+        return await self._dispatcher.wait_for(event, check=check, timeout=timeout, consume=consume)
+
+    def dispatch(self, event: str, *args: Any) -> bool:
+        """Emit ``on_<event>``. Returns ``True`` if a ``consume=True`` waiter took the event."""
+        return self._dispatcher.dispatch(event, *args)
 
     async def messages(self) -> AsyncIterator[Message]:
         """spectrum-ts style iteration: ``async for message in client.messages(): ...``"""
@@ -357,7 +366,8 @@ class Client:
             return
         for queue in self._subscribers:
             queue.put_nowait(message)
-        self.dispatch("message", message)
+        if self.dispatch("message", message):
+            return  # taken by wait_for(..., consume=True)
         extra = message.content.type.event_name
         if extra:
             self.dispatch(extra, message)

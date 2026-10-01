@@ -96,6 +96,7 @@ async def on_message(message):
             "message",
             check=lambda m: m.type is spectrum.ContentType.TEXT and m.sender == message.sender,
             timeout=60,
+            consume=True,  # don't also deliver the answer to on_message
         )
         await answer.reply(f"Nice to meet you, {answer.text}!")
 ```

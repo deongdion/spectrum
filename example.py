@@ -65,13 +65,20 @@ async def ping(message: spectrum.Message, _: str) -> None:
 async def ask(message: spectrum.Message, _: str) -> None:
     await message.space.send("What's your name?")
     # read receipts and reactions are messages too: wait for the next *text* from this person
-    answer = await client.wait_for(
-        "message",
-        check=lambda m: (
-            m.type is spectrum.ContentType.TEXT and m.space == message.space and m.sender == message.sender
-        ),
-        timeout=60,
-    )
+    try:
+        answer = await client.wait_for(
+            "message",
+            check=lambda m: (
+                m.type is spectrum.ContentType.TEXT
+                and m.space == message.space
+                and m.sender == message.sender
+            ),
+            timeout=60,
+            consume=True,  # the answer goes only here, not to on_message as well
+        )
+    except TimeoutError:
+        await message.space.send("No answer — maybe next time 👋")
+        return
     await answer.reply(f"Nice to meet you, {answer.text}!")
 
 

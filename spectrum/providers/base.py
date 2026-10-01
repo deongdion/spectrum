@@ -39,7 +39,7 @@ class ProviderContext:
     credentials: Credentials | None
     cloud: CloudClient | None
     project: ProjectInfo | None
-    dispatch: Callable[..., None] | None = None
+    dispatch: Callable[..., object] | None = None
     """Emit a client event (``dispatch("name", *args)`` -> ``on_name``)."""
 
 

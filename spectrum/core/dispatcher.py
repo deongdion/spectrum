@@ -3,6 +3,7 @@
 * ``@client.event`` registers *the* handler for ``on_<name>`` (replaces any previous one).
 * ``@client.listen("on_<name>")`` adds an extra listener; any number may coexist.
 * ``await client.wait_for("<name>", check=..., timeout=...)`` awaits the next matching event.
+  With ``consume=True`` the matched event is not passed on to handlers or listeners.
 * Every handler runs in its own task, so a slow handler never blocks the stream.
   Exceptions are routed to ``on_error(event_name, exc, *args)``.
 """
@@ -30,7 +31,7 @@ class EventDispatcher:
     def __init__(self) -> None:
         self._handlers: dict[str, Coro] = {}
         self._listeners: dict[str, list[Coro]] = {}
-        self._waiters: dict[str, list[tuple[asyncio.Future[Any], Callable[..., bool] | None]]] = {}
+        self._waiters: dict[str, list[tuple[asyncio.Future[Any], Callable[..., bool] | None, bool]]] = {}
         self._tasks: set[asyncio.Task[Any]] = set()
 
     # ------------------------------------------------------------------ registration
@@ -72,14 +73,16 @@ class EventDispatcher:
 
     # ------------------------------------------------------------------ dispatch
 
-    def dispatch(self, name: str, *args: Any) -> None:
+    def dispatch(self, name: str, *args: Any) -> bool:
+        """Deliver an event. Returns ``True`` when a ``consume=True`` waiter took it."""
         event = _event_name(name)
         log.debug("dispatch %s", event)
 
+        consumed = False
         waiters = self._waiters.get(event)
         if waiters:
             remaining = []
-            for future, check in waiters:
+            for future, check, consume in waiters:
                 if future.done():
                     continue
                 try:
@@ -89,21 +92,31 @@ class EventDispatcher:
                     continue
                 if matched:
                     future.set_result(args[0] if len(args) == 1 else (args or None))
+                    consumed = consumed or consume
                 else:
-                    remaining.append((future, check))
+                    remaining.append((future, check, consume))
             self._waiters[event] = remaining
+        if consumed:
+            log.debug("%s consumed by wait_for", event)
+            return True
 
         handler = self._handlers.get(event)
         if handler is not None:
             self._schedule(handler, event, args)
         for listener in self._listeners.get(event, ()):
             self._schedule(listener, event, args)
+        return False
 
     async def wait_for(
-        self, name: str, *, check: Callable[..., bool] | None = None, timeout: float | None = None
+        self,
+        name: str,
+        *,
+        check: Callable[..., bool] | None = None,
+        timeout: float | None = None,
+        consume: bool = False,
     ) -> Any:
         future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
-        self._waiters.setdefault(_event_name(name), []).append((future, check))
+        self._waiters.setdefault(_event_name(name), []).append((future, check, consume))
         return await asyncio.wait_for(future, timeout)
 
     def _schedule(self, coro: Coro, event: str, args: tuple[Any, ...]) -> None:
@@ -142,7 +155,7 @@ class EventDispatcher:
 
     def cancel_waiters(self) -> None:
         for waiters in self._waiters.values():
-            for future, _ in waiters:
+            for future, _, _ in waiters:
                 if not future.done():
                     future.cancel()
         self._waiters.clear()
