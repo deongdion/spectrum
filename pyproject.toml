@@ -1,7 +1,7 @@
 [project]
-name = "spectrum-py"
+name = "spectrum"
 version = "0.1.0"
-description = "Async Python SDK for Photon Spectrum (port of spectrum-ts) with a discord.py-style event API"
+description = "Async Python SDK for Photon Spectrum"
 requires-python = ">=3.11"
 dependencies = [
     "grpcio>=1.66",
@@ -34,4 +34,4 @@ extend-exclude = ["spectrum/providers/imessage/_proto"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "ASYNC"]
-ignore = ["E501", "ASYNC109"]  # discord.py-style `timeout=` parameters are intentional
+ignore = ["E501", "ASYNC109"]  # `timeout=` parameters on wait_for are intentional

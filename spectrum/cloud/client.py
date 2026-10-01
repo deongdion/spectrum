@@ -29,7 +29,7 @@ from .types import (
 
 log = logging.getLogger("spectrum.cloud")
 
-USER_AGENT = "spectrum-py/0.1.0"
+USER_AGENT = "spectrum-python/0.1.0"
 
 
 class CloudClient:

@@ -1,9 +1,9 @@
-"""spectrum — async Python SDK for Photon Spectrum (port of ``spectrum-ts``).
+"""spectrum — async Python SDK for Photon Spectrum.
 
 Layout::
 
     spectrum/
-      lib.py          Client (discord.py-style events, lifecycle, webhooks)
+      lib.py          Client (events, lifecycle, webhooks)
       core/           errors, configuration, event dispatcher, utils
       models/         Enums + dataclass models: Message, Space, User, Content variants
       content/        builders (text(), attachment(), reply() ...), markdown, vCard, MIME

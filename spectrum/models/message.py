@@ -107,19 +107,19 @@ class Message(Model):
         """Who sent / acted. ``None`` when the platform recorded no actor."""
         return self._sender
 
-    author = sender  # discord.py naming
+    author = sender  # alias
 
     @property
     def space(self) -> Space:
         return self._space
 
-    channel = space  # discord.py naming
+    channel = space  # alias
 
     @property
     def timestamp(self) -> datetime:
         return self._timestamp
 
-    created_at = timestamp  # discord.py naming
+    created_at = timestamp  # alias
 
     @property
     def part_index(self) -> int | None:

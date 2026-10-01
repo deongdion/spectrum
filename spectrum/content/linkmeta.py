@@ -22,7 +22,7 @@ log = logging.getLogger("spectrum.linkmeta")
 TIMEOUT = 5.0
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) "
-    "Version/17.0 Safari/605.1.15 spectrum-py/richlink"
+    "Version/17.0 Safari/605.1.15 spectrum-python/richlink"
 )
 JPEG_PROXY = "https://wsrv.nl/"
 MAX_IMAGE_WIDTH = 1200

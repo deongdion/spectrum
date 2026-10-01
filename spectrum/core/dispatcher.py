@@ -1,4 +1,4 @@
-"""discord.py-style event dispatching.
+"""Event dispatching.
 
 * ``@client.event`` registers *the* handler for ``on_<name>`` (replaces any previous one).
 * ``@client.listen("on_<name>")`` adds an extra listener; any number may coexist.

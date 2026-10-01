@@ -1,4 +1,4 @@
-"""``Client`` — the discord.py-style entry point.
+"""``Client`` — the SDK entry point.
 
     import spectrum
     from spectrum.providers import IMessage
