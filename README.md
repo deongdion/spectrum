@@ -50,6 +50,18 @@ Run the example bot, then text the bot's number `help` to list everything it can
 python example.py
 ```
 
+## AI assistant
+
+`ai.py` turns the bot into an assistant backed by any OpenAI-compatible model (for example a local Ollama server). The model can search the web and read pages on its own, and each conversation keeps a short history (text `reset` to clear it).
+
+```bash
+# .env
+AI_BASE_URL=http://localhost:11434/v1
+AI_MODEL=qwen3.8-unc:256k
+
+python ai.py
+```
+
 ## How it works
 
 ```mermaid
