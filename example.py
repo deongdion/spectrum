@@ -40,17 +40,23 @@ async def on_message(message: spectrum.Message):
         return
     text = message.text or ""
     print(f"<- {message.sender}: {text}")
+    command = text.strip().lower()
 
-    if text == "ping":
+    if command == "ping":
         await message.react(Emoji.LIKE)
         await message.reply("pong")
-    elif text == "party":
+    elif command == "party":
         await message.space.send(spectrum.effect("🎉", MessageEffect.CONFETTI))
-    elif text == "ask":
+    elif command == "ask":
         await message.space.send("What's your name?")
+        # read receipts and reactions are messages too: wait for the next *text* from this person
         answer = await client.wait_for(
             "message",
-            check=lambda m: m.space == message.space and m.sender == message.sender,
+            check=lambda m: (
+                m.type is spectrum.ContentType.TEXT
+                and m.space == message.space
+                and m.sender == message.sender
+            ),
             timeout=60,
         )
         await answer.reply(f"Nice to meet you, {answer.text}!")

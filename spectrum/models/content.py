@@ -623,7 +623,7 @@ class Reaction(Content):
         self._emoji = _require_str("emoji", str(emoji))
         if target.content.type is ContentType.REACTION:
             raise ContentError("cannot react to a reaction")
-        self._target = target
+        self._target = _check_targetable("react to", target)
 
     @property
     def emoji(self) -> str:
@@ -640,6 +640,32 @@ def _check_wrappable(builder: str, content: Content) -> Content:
     return content
 
 
+# Inbound *events* (not chat bubbles): their ids are synthetic (e.g. ``<guid>:read:<seq>``),
+# so the platform has nothing to reply or react to.
+EVENT_CONTENT = frozenset(
+    {
+        ContentType.READ,
+        ContentType.TYPING,
+        ContentType.POLL_OPTION,
+        ContentType.ADD_MEMBER,
+        ContentType.REMOVE_MEMBER,
+        ContentType.LEAVE_SPACE,
+        ContentType.RENAME,
+        ContentType.AVATAR,
+    }
+)
+
+
+def _check_targetable(action: str, target: Message) -> Message:
+    kind = target.content.type
+    if kind in EVENT_CONTENT:
+        hint = (
+            " — use message.content.target for the message that was read" if kind is ContentType.READ else ""
+        )
+        raise ContentError(f'cannot {action} a "{kind.value}" event{hint}')
+    return target
+
+
 @dataclass(init=False, repr=False, slots=True)
 class Reply(Content):
     type: ClassVar[ContentType] = ContentType.REPLY
@@ -649,7 +675,7 @@ class Reply(Content):
 
     def __init__(self, content: Content, target: Message) -> None:
         self._content = _check_wrappable("reply", content)
-        self._target = target
+        self._target = _check_targetable("reply to", target)
 
     @classmethod
     def inbound(cls, content: Content, target: Message) -> Reply:
