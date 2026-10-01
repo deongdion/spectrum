@@ -1,0 +1,44 @@
+[project]
+name = "spectrum-py"
+version = "0.1.0"
+description = "Async Python SDK for Photon Spectrum (port of spectrum-ts) with a discord.py-style event API"
+requires-python = ">=3.11"
+dependencies = [
+    "grpcio>=1.66",
+    "protobuf>=5",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+webhook = ["aiohttp>=3.9"]
+dotenv = ["python-dotenv>=1.0"]
+dev = ["grpcio-tools>=1.66", "python-dotenv>=1.0", "pytest>=8", "pytest-asyncio>=0.23", "aiohttp>=3.9", "ruff"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["spectrum*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.11"
+exclude = ["spectrum/providers/imessage/_proto", ".venv"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["spectrum/providers/imessage/_proto"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+ignore = ["E501", "ASYNC109"]  # discord.py-style `timeout=` parameters are intentional
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ASYNC110"]  # polling helpers in tests are fine
