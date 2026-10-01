@@ -44,7 +44,7 @@ Values passed to `spectrum.Client(...)` take precedence over the environment.
 
 > On Free/Pro plans your project uses a **shared line**: you can only message numbers registered under **Users** in the dashboard, and group chats are unavailable. Dedicated lines (Business) lift both restrictions.
 
-Run the example bot, then text the bot's number `ping`, `party` or `ask`:
+Run the example bot, then text the bot's number `help` to list everything it can send (photos, albums, voice notes, maps, polls, effects, streaming text and more):
 
 ```bash
 python example.py
