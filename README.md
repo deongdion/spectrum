@@ -291,9 +291,9 @@ classDiagram
         +id: str
         +content: Content
         +type: ContentType
-        +text: str | None
+        +text: Optional~str~
         +direction: Direction
-        +sender: User | None
+        +sender: Optional~User~
         +space: Space
         +timestamp: datetime
         +metadata: dict
@@ -302,7 +302,7 @@ classDiagram
     class Space {
         +id: str
         +type: SpaceType
-        +phone: str | None
+        +phone: Optional~str~
         +send() typing() rename() add() remove() leave()
         +fetch_members() fetch_message()
     }
