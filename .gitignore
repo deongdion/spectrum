@@ -19,3 +19,5 @@ dist/
 
 # local-only scripts
 ai.py
+agent.py
+.agent/

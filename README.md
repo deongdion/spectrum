@@ -50,6 +50,20 @@ Run the example bot, then text the bot's number `help` to list everything it can
 python example.py
 ```
 
+## Running on your own Mac
+
+Instead of Photon's lines, the bot can use the Messages app on a Mac you control: it reads `~/Library/Messages/chat.db` and sends with AppleScript. No Spectrum project is needed.
+
+```python
+from spectrum.providers import LocalIMessage
+
+client = spectrum.Client(providers=[LocalIMessage()])
+```
+
+- Sign Messages in to the Apple ID the bot should use (an email address works; a phone number needs an iPhone to register it).
+- Give the terminal running Python **Full Disk Access**, and allow it to control Messages the first time it sends.
+- Supported: text, attachments, voice notes, contact cards, links and inbound tapbacks. Sending tapbacks, edits, unsend, read receipts, typing indicators, effects and group management are not available through AppleScript.
+
 ## How it works
 
 ```mermaid
